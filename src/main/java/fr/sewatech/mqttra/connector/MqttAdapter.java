@@ -1,7 +1,10 @@
 package fr.sewatech.mqttra.connector;
 
 import fr.sewatech.mqttra.api.MqttListener;
-import org.fusesource.mqtt.client.*;
+import org.fusesource.mqtt.client.CallbackConnection;
+import org.fusesource.mqtt.client.MQTT;
+import org.fusesource.mqtt.client.QoS;
+import org.fusesource.mqtt.client.Topic;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ActivationSpec;
@@ -55,7 +58,7 @@ public class MqttAdapter implements ResourceAdapter {
             connection.connect(new SilentCallback<Void>() {
                 @Override
                 public void onSuccess(Void value) {
-                    connection.subscribe(new Topic[]{new Topic(spec.getTopicName(), spec.getQoS())}, new SilentCallback<byte[]>());
+                    connection.subscribe(new Topic[]{new Topic(spec.getTopicName(), QoS.values()[spec.getQos()])}, new SilentCallback<byte[]>());
                 }
             });
         } catch (Exception e) {
@@ -73,7 +76,7 @@ public class MqttAdapter implements ResourceAdapter {
                 connection.disconnect(new SilentCallback<Void>());
             }
 
-            MqttListener listener = endPoints.remove(key);
+            endPoints.remove(key);
         } catch (Exception e) {
             e.printStackTrace();
         }

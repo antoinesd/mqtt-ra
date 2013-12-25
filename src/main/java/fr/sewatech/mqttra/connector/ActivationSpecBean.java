@@ -1,7 +1,5 @@
 package fr.sewatech.mqttra.connector;
 
-import org.fusesource.mqtt.client.QoS;
-
 import javax.resource.ResourceException;
 import javax.resource.spi.ActivationSpec;
 import javax.resource.spi.InvalidPropertyException;
@@ -13,8 +11,9 @@ import java.util.Objects;
  */
 public class ActivationSpecBean implements ActivationSpec {
     private ResourceAdapter resourceAdapter;
-    private String topicName = "sewatech";
-    private QoS qoS = QoS.AT_MOST_ONCE;
+
+    private String topicName;
+    private int qos = 0;
     private String serverUrl = "tcp://localhost:1883";
 
     public String getTopicName() {
@@ -25,12 +24,12 @@ public class ActivationSpecBean implements ActivationSpec {
         this.topicName = topicName;
     }
 
-    public QoS getQoS() {
-        return qoS;
+    public int getQos() {
+        return qos;
     }
 
-    public void setQoS(QoS qoS) {
-        this.qoS = qoS;
+    public void setQos(int qos) {
+        this.qos = qos;
     }
 
     public String getServerUrl() {
@@ -43,7 +42,17 @@ public class ActivationSpecBean implements ActivationSpec {
 
     @Override
     public void validate() throws InvalidPropertyException {
+        validateNotNullOrEmpty("topicName", topicName);
+        validateNotNullOrEmpty("serverUrl", serverUrl);
+        if (qos < 0 || qos > 2) {
+            throw new InvalidPropertyException("qos value " + qos + "is not valid, it should be between 0 and 2");
+        }
+    }
 
+    private void validateNotNullOrEmpty(String propertyName, String value) throws InvalidPropertyException {
+        if (value == null || value.isEmpty()) {
+            throw new InvalidPropertyException(propertyName + " is required");
+        }
     }
 
     @Override
@@ -62,13 +71,13 @@ public class ActivationSpecBean implements ActivationSpec {
         if (o == null || getClass() != o.getClass()) return false;
 
         ActivationSpecBean that = (ActivationSpecBean) o;
-        return Objects.equals(this.qoS, that.qoS)
+        return Objects.equals(this.qos, that.qos)
                 && Objects.equals(this.serverUrl, that.serverUrl)
                 && Objects.equals(this.topicName, that.topicName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(topicName, qoS, serverUrl);
+        return Objects.hash(topicName, qos, serverUrl);
     }
 }

@@ -3,6 +3,7 @@ package fr.sewatech.mqttra;
 import fr.sewatech.mqttra.api.MqttListener;
 import fr.sewatech.mqttra.connector.MqttAdapter;
 import fr.sewatech.mqttra.example.FirstMqttBean;
+import fr.sewatech.mqttra.example.SecondMqttBean;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -26,17 +27,18 @@ public class Runner {
         System.out.println(rarLib.toString(true));
         System.out.println();
 
-        final EnterpriseArchive rar = ShrinkWrap.create(EnterpriseArchive.class, "connectorx.rar");
-        rar.addAsManifestResource(new ClassLoaderAsset("META-INF/ra.xml"), "ra.xml");
+        final EnterpriseArchive rar = ShrinkWrap.create(EnterpriseArchive.class, "connector.rar");
+        rar.addAsManifestResource(new ClassLoaderAsset("META-INF/ra.xml"), "ra.xml")
+           .addAsLibrary(rarLib);
+
         System.out.println(rar.toString(true));
         System.out.println();
 
         final JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "mdb.jar");
-        jar.addPackages(true, FirstMqttBean.class.getPackage());
+        jar.addClasses(FirstMqttBean.class, SecondMqttBean.class);
         System.out.println(jar.toString(true));
         System.out.println();
 
-        // Make the EAR
         final EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
                 .addAsLibrary(rarLib)
                 .addAsModule(rar)
