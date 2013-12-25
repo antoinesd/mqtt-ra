@@ -6,6 +6,7 @@ import javax.resource.ResourceException;
 import javax.resource.spi.ActivationSpec;
 import javax.resource.spi.InvalidPropertyException;
 import javax.resource.spi.ResourceAdapter;
+import java.util.Objects;
 
 /**
  * @author Alexis Hassler
@@ -53,5 +54,21 @@ public class ActivationSpecBean implements ActivationSpec {
     @Override
     public void setResourceAdapter(ResourceAdapter resourceAdapter) throws ResourceException {
         this.resourceAdapter = resourceAdapter;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ActivationSpecBean that = (ActivationSpecBean) o;
+        return Objects.equals(this.qoS, that.qoS)
+                && Objects.equals(this.serverUrl, that.serverUrl)
+                && Objects.equals(this.topicName, that.topicName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(topicName, qoS, serverUrl);
     }
 }

@@ -1,7 +1,5 @@
 package fr.sewatech.mqttra.api;
 
-import org.fusesource.mqtt.client.Message;
-
 /**
  * @author Alexis Hassler
  */

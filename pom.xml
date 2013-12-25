@@ -8,6 +8,11 @@
     <artifactId>mqtt-ra</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <jetty.version>7.6.9.v20130131</jetty.version>
+        <activemq.version>5.9.0</activemq.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>javax</groupId>
@@ -43,5 +48,32 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.openejb.maven</groupId>
+                <artifactId>tomee-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <configuration>
+                    <tomeeVersion>1.6.0</tomeeVersion>
+                    <tomeeClassifier>plus</tomeeClassifier>
+                    <libs>
+                        <lib>org.apache.activemq:activemq-mqtt:${activemq.version}</lib>
+                        <lib>org.fusesource.mqtt-client:mqtt-client:1.5</lib>
+
+                        <lib>org.fusesource.hawtdispatch:hawtdispatch:1.18</lib>
+                        <lib>org.fusesource.hawtdispatch:hawtdispatch-transport:1.18</lib>
+
+                        <lib>org.apache.activemq:activemq-http:${activemq.version}</lib>
+                        <lib>org.eclipse.jetty:jetty-server:${jetty.version}</lib>
+                        <lib>org.eclipse.jetty:jetty-servlet:${jetty.version}</lib>
+                        <lib>org.eclipse.jetty:jetty-websocket:${jetty.version}</lib>
+                    </libs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

@@ -2,7 +2,7 @@ package fr.sewatech.mqttra;
 
 import fr.sewatech.mqttra.api.MqttListener;
 import fr.sewatech.mqttra.connector.MqttAdapter;
-import fr.sewatech.mqttra.example.MqttBean;
+import fr.sewatech.mqttra.example.FirstMqttBean;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -27,13 +27,12 @@ public class Runner {
         System.out.println();
 
         final EnterpriseArchive rar = ShrinkWrap.create(EnterpriseArchive.class, "connectorx.rar");
-//        rar.addAsModule(rarLib);
         rar.addAsManifestResource(new ClassLoaderAsset("META-INF/ra.xml"), "ra.xml");
         System.out.println(rar.toString(true));
         System.out.println();
 
         final JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "mdb.jar");
-        jar.addPackages(true, MqttBean.class.getPackage());
+        jar.addPackages(true, FirstMqttBean.class.getPackage());
         System.out.println(jar.toString(true));
         System.out.println();
 
