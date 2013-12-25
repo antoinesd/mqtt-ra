@@ -1,23 +1,20 @@
 package fr.sewatech.mqttra.api;
 
-import org.fusesource.hawtbuf.Buffer;
-import org.fusesource.hawtbuf.UTF8Buffer;
-
 public class Message {
 
-    private UTF8Buffer topic;
-    private Buffer payload;
+    private String topic;
+    private byte[] payload;
 
-    public Message(UTF8Buffer topic, Buffer payload) {
+    public Message(String topic, byte[] payload) {
         this.payload = payload;
         this.topic = topic;
     }
 
     public byte[] getPayload() {
-        return payload.toByteArray();
+        return payload;
     }
 
     public String getTopic() {
-        return topic.toString();
+        return topic;
     }
 }

@@ -25,7 +25,7 @@ class MqttConnectionListener implements Listener {
 
     @Override
     public void onPublish(UTF8Buffer topic, Buffer message, Runnable ack) {
-        mdb.onMessage(new Message(topic, message));
+        mdb.onMessage(new Message(topic.toString(), message.toByteArray()));
         ack.run();
     }
 
