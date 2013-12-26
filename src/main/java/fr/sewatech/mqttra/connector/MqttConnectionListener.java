@@ -17,10 +17,12 @@ class MqttConnectionListener implements Listener {
 
     @Override
     public void onConnected() {
+        System.out.println("onConnected");
     }
 
     @Override
     public void onDisconnected() {
+        System.out.println("onDisconnected");
     }
 
     @Override
@@ -31,5 +33,6 @@ class MqttConnectionListener implements Listener {
 
     @Override
     public void onFailure(Throwable value) {
+        System.out.println("onFailure");
     }
 }

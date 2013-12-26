@@ -22,8 +22,8 @@ import java.util.Objects;
  */
 public class MqttAdapter implements ResourceAdapter {
 
-    Map<Key, MqttListener> endPoints = new HashMap<Key, MqttListener>();
-    Map<Key, CallbackConnection> connections = new HashMap<Key, CallbackConnection>();
+    Map<Key, MqttListener> endPoints = new HashMap<>();
+    Map<Key, CallbackConnection> connections = new HashMap<>();
 
     @Override
     public void start(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
@@ -35,10 +35,6 @@ public class MqttAdapter implements ResourceAdapter {
 
     /**
      * Déploiement d'un MDB : branchement d'un client MQTT ?
-     *
-     * @param mdbFactory
-     * @param activationSpec
-     * @throws ResourceException
      */
     @Override
     public void endpointActivation(MessageEndpointFactory mdbFactory, ActivationSpec activationSpec) throws ResourceException {
@@ -55,10 +51,11 @@ public class MqttAdapter implements ResourceAdapter {
 
             connection.listener(new MqttConnectionListener(mdb));
 
-            connection.connect(new SilentCallback<Void>() {
+            connection.connect(new LoggingCallback<Void>("connect") {
                 @Override
                 public void onSuccess(Void value) {
-                    connection.subscribe(new Topic[]{new Topic(spec.getTopicName(), QoS.values()[spec.getQos()])}, new SilentCallback<byte[]>());
+                    super.onSuccess(value);
+                    connection.subscribe(new Topic[]{new Topic(spec.getTopicName(), QoS.values()[spec.getQos()])}, new LoggingCallback<byte[]>("subscribe"));
                 }
             });
         } catch (Exception e) {
@@ -71,13 +68,13 @@ public class MqttAdapter implements ResourceAdapter {
     public void endpointDeactivation(MessageEndpointFactory mdbFactory, ActivationSpec activationSpec) {
         Key key = new Key(mdbFactory, activationSpec);
         try {
+            endPoints.remove(key);
             CallbackConnection connection = connections.remove(key);
             if (connection != null) {
-                connection.disconnect(new SilentCallback<Void>());
+                connection.disconnect(new LoggingCallback<Void>("disconnect"));
             }
 
-            endPoints.remove(key);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
     }

@@ -13,8 +13,10 @@ import javax.ejb.MessageDriven;
         @ActivationConfigProperty(propertyName = "topicName", propertyValue = "swt2")
 })
 public class SecondMqttBean implements MqttListener{
+
     @Override
     public void onMessage(Message message) {
+        Messages.add(message);
         System.out.println("Message received in " + this.getClass().getName() + " on Topic " + message.getTopic());
     }
 }
