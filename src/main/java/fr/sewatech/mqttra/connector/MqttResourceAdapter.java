@@ -1,53 +1,59 @@
 package fr.sewatech.mqttra.connector;
 
 import fr.sewatech.mqttra.api.MqttListener;
-import org.fusesource.mqtt.client.CallbackConnection;
-import org.fusesource.mqtt.client.MQTT;
-import org.fusesource.mqtt.client.QoS;
-import org.fusesource.mqtt.client.Topic;
+import org.fusesource.hawtbuf.Buffer;
+import org.fusesource.hawtbuf.UTF8Buffer;
+import org.fusesource.hawtdispatch.Task;
+import org.fusesource.hawtdispatch.internal.HawtDispatcher;
+import org.fusesource.hawtdispatch.internal.SerialDispatchQueue;
+import org.fusesource.mqtt.client.*;
 
 import javax.resource.ResourceException;
-import javax.resource.spi.ActivationSpec;
-import javax.resource.spi.BootstrapContext;
-import javax.resource.spi.ResourceAdapter;
-import javax.resource.spi.ResourceAdapterInternalException;
+import javax.resource.spi.*;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.xa.XAResource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+import static javax.resource.spi.TransactionSupport.TransactionSupportLevel.NoTransaction;
 
 /**
  * @author Alexis Hassler
  */
-public class MqttAdapter implements ResourceAdapter {
+@Connector(
+        vendorName = "sewatech", version = "0.1", eisType = "MQTT Inbound Adapter",
+        transactionSupport = NoTransaction)
+public class MqttResourceAdapter implements ResourceAdapter {
 
     Map<Key, MqttListener> endPoints = new HashMap<>();
     Map<Key, CallbackConnection> connections = new HashMap<>();
 
     @Override
     public void start(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
+        System.out.println("MqttResourceAdapter.start");
     }
 
     @Override
     public void stop() {
+        System.out.println("MqttResourceAdapter.stop");
     }
 
     /**
-     * Déploiement d'un MDB : branchement d'un client MQTT ?
+     * Déploiement d'un MDB : branchement d'un client MQTT
      */
     @Override
     public void endpointActivation(MessageEndpointFactory mdbFactory, ActivationSpec activationSpec) throws ResourceException {
-        final ActivationSpecBean spec = (ActivationSpecBean) activationSpec;
-        final MqttListener mdb = (MqttListener) mdbFactory.createEndpoint(null);
-        Key key = new Key(mdbFactory, activationSpec);
+        final ActivationSpecBean spec = ActivationSpecBean.class.cast(activationSpec);
+        final MqttListener mdb = MqttListener.class.cast(mdbFactory.createEndpoint(null));
+        final Key key = new Key(mdbFactory, activationSpec);
 
         try {
             MQTT mqtt = new MQTT();
             mqtt.setHost(spec.getServerUrl());
             final CallbackConnection connection = mqtt.callbackConnection();
-            connections.put(key, connection);
-            endPoints.put(key, mdb);
 
             connection.listener(new MqttConnectionListener(mdb));
 
@@ -55,23 +61,33 @@ public class MqttAdapter implements ResourceAdapter {
                 @Override
                 public void onSuccess(Void value) {
                     super.onSuccess(value);
-                    connection.subscribe(new Topic[]{new Topic(spec.getTopicName(), QoS.values()[spec.getQos()])}, new LoggingCallback<byte[]>("subscribe"));
+
+                    connection.subscribe(spec.buildTopicArray(), new LoggingCallback<byte[]>("subscribe"));
+                    connections.put(key, connection);
+                    endPoints.put(key, mdb);
                 }
             });
         } catch (Exception e) {
             throw new ResourceException(e);
         }
-
     }
 
     @Override
     public void endpointDeactivation(MessageEndpointFactory mdbFactory, ActivationSpec activationSpec) {
-        Key key = new Key(mdbFactory, activationSpec);
+        final ActivationSpecBean spec = ActivationSpecBean.class.cast(activationSpec);
+        System.out.println("MqttResourceAdapter.endpointDeactivation for " + spec.getTopicName() );
+        Key key = new Key(mdbFactory, spec);
         try {
             endPoints.remove(key);
-            CallbackConnection connection = connections.remove(key);
+            final CallbackConnection connection = connections.remove(key);
             if (connection != null) {
-                connection.disconnect(new LoggingCallback<Void>("disconnect"));
+                connection.suspend();  // in order to skip other messages in the topic
+                connection.getDispatchQueue().execute(new Task() {
+                    @Override
+                    public void run() {
+                        connection.kill(new LoggingCallback<Void>("====> disconnect"));
+                    }
+                });
             }
 
         } catch (Throwable e) {

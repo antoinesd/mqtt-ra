@@ -17,22 +17,23 @@ class MqttConnectionListener implements Listener {
 
     @Override
     public void onConnected() {
-        System.out.println("onConnected");
+        System.out.println("MqttConnectionListener.onConnected");
     }
 
     @Override
     public void onDisconnected() {
-        System.out.println("onDisconnected");
+        System.out.println("MqttConnectionListener.onDisconnected");
     }
 
     @Override
     public void onPublish(UTF8Buffer topic, Buffer message, Runnable ack) {
+        System.out.println("MqttConnectionListener.onPublish");
         mdb.onMessage(new Message(topic.toString(), message.toByteArray()));
         ack.run();
     }
 
     @Override
     public void onFailure(Throwable value) {
-        System.out.println("onFailure");
+        System.out.println("MqttConnectionListener.onFailure");
     }
 }

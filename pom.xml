@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.fusesource.mqtt-client</groupId>
             <artifactId>mqtt-client</artifactId>
-            <version>1.5</version>
+            <version>1.10</version>
             <scope>provided</scope>
         </dependency>
 
@@ -46,7 +46,6 @@
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
-            <version>1.1.2.Final</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -54,6 +53,12 @@
                     <groupId>org.jboss.shrinkwrap.descriptors</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -73,12 +78,31 @@
         </dependency>
     </dependencies>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.shrinkwrap.resolver</groupId>
+                <artifactId>shrinkwrap-resolver-bom</artifactId>
+                <version>2.0.0</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>1.1.2.Final</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.1</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -87,6 +111,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.16</version>
                 <configuration>
                     <systemProperties>
                         <tomee.classifier>${tomee.classifier}</tomee.classifier>
@@ -100,8 +125,8 @@
                 <artifactId>tomee-maven-plugin</artifactId>
                 <version>1.0.1</version>
                 <configuration>
-                    <tomeeVersion>1.6.0</tomeeVersion>
-                    <tomeeClassifier>plus</tomeeClassifier>
+                    <tomeeVersion>${tomee.version}</tomeeVersion>
+                    <tomeeClassifier>${tomee.classifier}</tomeeClassifier>
                     <libs>
                         <lib>org.apache.activemq:activemq-mqtt:${activemq.version}</lib>
                         <lib>org.fusesource.mqtt-client:mqtt-client:1.5</lib>

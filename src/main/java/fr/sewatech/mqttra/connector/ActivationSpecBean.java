@@ -1,6 +1,11 @@
 package fr.sewatech.mqttra.connector;
 
+import fr.sewatech.mqttra.api.MqttListener;
+import org.fusesource.mqtt.client.QoS;
+import org.fusesource.mqtt.client.Topic;
+
 import javax.resource.ResourceException;
+import javax.resource.spi.Activation;
 import javax.resource.spi.ActivationSpec;
 import javax.resource.spi.InvalidPropertyException;
 import javax.resource.spi.ResourceAdapter;
@@ -9,12 +14,14 @@ import java.util.Objects;
 /**
  * @author Alexis Hassler
  */
+@Activation(messageListeners = MqttListener.class)
 public class ActivationSpecBean implements ActivationSpec {
     private ResourceAdapter resourceAdapter;
 
     private String topicName;
-    private int qos = 0;
+    private int qosLevel = 0;
     private String serverUrl = "tcp://localhost:1883";
+    private int poolSize;
 
     public String getTopicName() {
         return topicName;
@@ -24,12 +31,15 @@ public class ActivationSpecBean implements ActivationSpec {
         this.topicName = topicName;
     }
 
-    public int getQos() {
-        return qos;
+    public int getQosLevel() {
+        return qosLevel;
     }
 
-    public void setQos(int qos) {
-        this.qos = qos;
+    public void setQosLevel(int qosLevel) {
+        this.qosLevel = qosLevel;
+    }
+    public QoS getQos() {
+        return QoS.values()[qosLevel];
     }
 
     public String getServerUrl() {
@@ -40,12 +50,19 @@ public class ActivationSpecBean implements ActivationSpec {
         this.serverUrl = serverUrl;
     }
 
+    Topic[] buildTopicArray() {
+        return new Topic[]{buildTopic()};
+    }
+    Topic buildTopic() {
+        return new Topic(topicName, getQos());
+    }
+
     @Override
     public void validate() throws InvalidPropertyException {
         validateNotNullOrEmpty("topicName", topicName);
         validateNotNullOrEmpty("serverUrl", serverUrl);
-        if (qos < 0 || qos > 2) {
-            throw new InvalidPropertyException("qos value " + qos + "is not valid, it should be between 0 and 2");
+        if (qosLevel < 0 || qosLevel > 2) {
+            throw new InvalidPropertyException("qosLevel value " + qosLevel + "is not valid, it should be between 0 and 2");
         }
     }
 
@@ -71,13 +88,21 @@ public class ActivationSpecBean implements ActivationSpec {
         if (o == null || getClass() != o.getClass()) return false;
 
         ActivationSpecBean that = (ActivationSpecBean) o;
-        return Objects.equals(this.qos, that.qos)
+        return Objects.equals(this.qosLevel, that.qosLevel)
                 && Objects.equals(this.serverUrl, that.serverUrl)
                 && Objects.equals(this.topicName, that.topicName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(topicName, qos, serverUrl);
+        return Objects.hash(topicName, qosLevel, serverUrl);
+    }
+
+    public int getPoolSize() {
+        return poolSize;
+    }
+
+    public void setPoolSize(int poolSize) {
+        this.poolSize = poolSize;
     }
 }

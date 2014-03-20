@@ -16,11 +16,16 @@ import javax.ejb.MessageDriven;
         @ActivationConfigProperty(propertyName = "serverUrl", propertyValue = "tcp://localhost:1883")
     }
 )
-public class FirstMqttBean implements MqttListener{
+public class BlockingMqttBean implements MqttListener{
 
     @Override
     public void onMessage(Message message) {
-        Messages.add(message);
-        System.out.println("Message received " + new String(message.getPayload()) + " in " + this.getClass().getName() + " on Topic " + message.getTopic());
+        try {
+            System.out.println("Message received in " + this.getClass().getSimpleName() + " : " + new String(message.getPayload()));
+            Thread.sleep(1000);
+            System.out.println("Blocking MDB : done");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

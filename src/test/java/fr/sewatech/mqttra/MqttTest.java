@@ -1,7 +1,8 @@
 package fr.sewatech.mqttra;
 
 import fr.sewatech.mqttra.api.MqttListener;
-import fr.sewatech.mqttra.connector.MqttAdapter;
+import fr.sewatech.mqttra.connector.MqttResourceAdapter;
+import fr.sewatech.mqttra.example.BlockingMqttBean;
 import fr.sewatech.mqttra.example.FirstMqttBean;
 import fr.sewatech.mqttra.example.Messages;
 import fr.sewatech.mqttra.example.SecondMqttBean;
@@ -11,13 +12,15 @@ import org.fusesource.mqtt.client.QoS;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.ClassLoaderAsset;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.ResourceAdapterArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 
@@ -28,11 +31,10 @@ public class MqttTest {
     public static EnterpriseArchive createDeployment() {
 
         JavaArchive rarLib = ShrinkWrap.create(JavaArchive.class, "connector.jar")
-                .addPackages(true, MqttAdapter.class.getPackage())
+                .addPackages(true, MqttResourceAdapter.class.getPackage())
                 .addPackages(true, MqttListener.class.getPackage());
 
-        EnterpriseArchive rar = ShrinkWrap.create(EnterpriseArchive.class, "connector.rar")
-                .addAsManifestResource(new ClassLoaderAsset("META-INF/ra.xml"), "ra.xml")
+        ResourceAdapterArchive rar = ShrinkWrap.create(ResourceAdapterArchive.class, new Random().nextInt() + "-connector.rar")
                 .addAsLibrary(rarLib);
 
         JavaArchive jarLib = ShrinkWrap.create(JavaArchive.class, "lib.jar")
@@ -41,7 +43,7 @@ public class MqttTest {
 
         JavaArchive ejbJar = ShrinkWrap.create(JavaArchive.class, "ejb.jar")
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
-                .addClasses(FirstMqttBean.class, SecondMqttBean.class);
+                .addClasses(FirstMqttBean.class, SecondMqttBean.class, BlockingMqttBean.class);
 
         WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
                 .addClasses(MqttTest.class);
@@ -49,8 +51,8 @@ public class MqttTest {
         return ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
                 .addAsLibrary(rarLib)
                 .addAsLibrary(jarLib)
-                .addAsModule(ejbJar)
                 .addAsModule(rar)
+                .addAsModule(ejbJar)
                 .addAsModule(war);
     }
 
@@ -61,9 +63,11 @@ public class MqttTest {
         BlockingConnection connection = mqtt.blockingConnection();
         connection.connect();
         Thread.sleep(100);
-        connection.publish("swt1", "TEST".getBytes(), QoS.AT_MOST_ONCE, false);
+        connection.publish("swt1", "TEST1".getBytes(), QoS.AT_MOST_ONCE, true);
+        connection.publish("swt1", "TEST2".getBytes(), QoS.AT_MOST_ONCE, true);
+        connection.publish("swt1", "TEST3".getBytes(), QoS.AT_MOST_ONCE, true);
         Thread.sleep(100);
 
-        assertEquals(1, Messages.size());
+        assertEquals(3, Messages.size());
     }
 }
