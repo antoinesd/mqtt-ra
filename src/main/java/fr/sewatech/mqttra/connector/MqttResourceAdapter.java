@@ -1,23 +1,26 @@
 package fr.sewatech.mqttra.connector;
 
+import fr.sewatech.mqttra.api.Message;
 import fr.sewatech.mqttra.api.MqttListener;
-import org.fusesource.hawtbuf.Buffer;
-import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.hawtdispatch.Task;
-import org.fusesource.hawtdispatch.internal.HawtDispatcher;
-import org.fusesource.hawtdispatch.internal.SerialDispatchQueue;
-import org.fusesource.mqtt.client.*;
+import org.fusesource.mqtt.client.CallbackConnection;
+import org.fusesource.mqtt.client.MQTT;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.*;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
+import javax.resource.spi.work.Work;
+import javax.resource.spi.work.WorkException;
 import javax.transaction.xa.XAResource;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import static java.lang.reflect.Proxy.newProxyInstance;
 import static javax.resource.spi.TransactionSupport.TransactionSupportLevel.NoTransaction;
 
 /**
@@ -30,10 +33,12 @@ public class MqttResourceAdapter implements ResourceAdapter {
 
     Map<Key, MqttListener> endPoints = new HashMap<>();
     Map<Key, CallbackConnection> connections = new HashMap<>();
+    private BootstrapContext bootstrapContext;
 
     @Override
     public void start(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
         System.out.println("MqttResourceAdapter.start");
+        this.bootstrapContext = bootstrapContext;
     }
 
     @Override
@@ -45,9 +50,8 @@ public class MqttResourceAdapter implements ResourceAdapter {
      * Déploiement d'un MDB : branchement d'un client MQTT
      */
     @Override
-    public void endpointActivation(MessageEndpointFactory mdbFactory, ActivationSpec activationSpec) throws ResourceException {
+    public void endpointActivation(final MessageEndpointFactory mdbFactory, ActivationSpec activationSpec) throws ResourceException {
         final ActivationSpecBean spec = ActivationSpecBean.class.cast(activationSpec);
-        final MqttListener mdb = MqttListener.class.cast(mdbFactory.createEndpoint(null));
         final Key key = new Key(mdbFactory, activationSpec);
 
         try {
@@ -55,6 +59,42 @@ public class MqttResourceAdapter implements ResourceAdapter {
             mqtt.setHost(spec.getServerUrl());
             final CallbackConnection connection = mqtt.callbackConnection();
 
+            int poolSize = spec.getPoolSize();
+            final BlockingQueue<MqttListener> pool = new ArrayBlockingQueue<>(poolSize);
+            for (int i = 0; i < poolSize; i++) {
+                pool.add(MqttListener.class.cast(mdbFactory.createEndpoint(null)));
+            }
+
+
+            System.out.println("Pool size : " + pool.size());
+            final MqttListener mdb = new MqttListener() {
+                @Override
+                public void onMessage(final Message message) {
+                    final MqttListener listener;
+                    try {
+                        listener = pool.take();
+
+                        bootstrapContext.getWorkManager().startWork(new Work() {
+                            @Override
+                            public void run() {
+                                try {
+                                    listener.onMessage(message);
+                                    pool.add(listener);
+                                } catch (Throwable e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            @Override
+                            public void release() {
+                            }
+                        });
+                    } catch (WorkException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            };
             connection.listener(new MqttConnectionListener(mdb));
 
             connection.connect(new LoggingCallback<Void>("connect") {

@@ -30,12 +30,13 @@ public class MqttTest {
     @Deployment
     public static EnterpriseArchive createDeployment() {
 
-        JavaArchive rarLib = ShrinkWrap.create(JavaArchive.class, "connector.jar")
-                .addPackages(true, MqttResourceAdapter.class.getPackage())
+        JavaArchive raImplLib = ShrinkWrap.create(JavaArchive.class, "connector-impl.jar")
+                .addPackages(true, MqttResourceAdapter.class.getPackage());
+        JavaArchive raApiLib = ShrinkWrap.create(JavaArchive.class, "connector-api.jar")
                 .addPackages(true, MqttListener.class.getPackage());
 
         ResourceAdapterArchive rar = ShrinkWrap.create(ResourceAdapterArchive.class, new Random().nextInt() + "-connector.rar")
-                .addAsLibrary(rarLib);
+                .addAsLibraries(raImplLib);
 
         JavaArchive jarLib = ShrinkWrap.create(JavaArchive.class, "lib.jar")
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
@@ -43,13 +44,14 @@ public class MqttTest {
 
         JavaArchive ejbJar = ShrinkWrap.create(JavaArchive.class, "ejb.jar")
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
-                .addClasses(FirstMqttBean.class, SecondMqttBean.class, BlockingMqttBean.class);
+                .addClasses(FirstMqttBean.class, SecondMqttBean.class)
+                .addClasses(BlockingMqttBean.class);
 
         WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
                 .addClasses(MqttTest.class);
 
         return ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
-                .addAsLibrary(rarLib)
+                .addAsLibrary(raApiLib)
                 .addAsLibrary(jarLib)
                 .addAsModule(rar)
                 .addAsModule(ejbJar)
@@ -66,7 +68,8 @@ public class MqttTest {
         connection.publish("swt1", "TEST1".getBytes(), QoS.AT_MOST_ONCE, true);
         connection.publish("swt1", "TEST2".getBytes(), QoS.AT_MOST_ONCE, true);
         connection.publish("swt1", "TEST3".getBytes(), QoS.AT_MOST_ONCE, true);
-        Thread.sleep(100);
+        connection.publish("swt1", "TEST4".getBytes(), QoS.AT_MOST_ONCE, true);
+        Thread.sleep(10000);
 
         assertEquals(3, Messages.size());
     }

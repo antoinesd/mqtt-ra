@@ -21,7 +21,7 @@ public class ActivationSpecBean implements ActivationSpec {
     private String topicName;
     private int qosLevel = 0;
     private String serverUrl = "tcp://localhost:1883";
-    private int poolSize;
+    private int poolSize = 3;
 
     public String getTopicName() {
         return topicName;
