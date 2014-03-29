@@ -4,9 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>fr.sewatech</groupId>
-    <artifactId>mqtt-ra</artifactId>
+    <groupId>fr.sewatech.mqttra</groupId>
+    <artifactId>mqtt-ra-parent</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>mqtt-ra-api</module>
+        <module>mqtt-ra-example</module>
+        <module>mqtt-ra-connector</module>
+        <module>mqtt-ra</module>
+        <module>mqtt-ra-tomee</module>
+    </modules>
 
     <properties>
         <jetty.version>7.6.9.v20130131</jetty.version>
@@ -129,8 +137,8 @@
                     <tomeeClassifier>${tomee.classifier}</tomeeClassifier>
                     <libs>
                         <lib>org.apache.activemq:activemq-mqtt:${activemq.version}</lib>
-                        <lib>org.fusesource.mqtt-client:mqtt-client:1.5</lib>
 
+                        <lib>org.fusesource.mqtt-client:mqtt-client:1.5</lib>
                         <lib>org.fusesource.hawtdispatch:hawtdispatch:1.18</lib>
                         <lib>org.fusesource.hawtdispatch:hawtdispatch-transport:1.18</lib>
 
@@ -138,7 +146,27 @@
                         <lib>org.eclipse.jetty:jetty-server:${jetty.version}</lib>
                         <lib>org.eclipse.jetty:jetty-servlet:${jetty.version}</lib>
                         <lib>org.eclipse.jetty:jetty-websocket:${jetty.version}</lib>
+
+                        <lib>fr.sewatech.mqttra:mqtt-ra-api:1.0-SNAPSHOT</lib>
+                        <lib>fr.sewatech.mqttra:mqtt-ra-outbound:1.0-SNAPSHOT</lib>
+
+                        <!-- WebSocket in ActiveMQ-->
+                        <lib>org.apache.activemq:activemq-http:${activemq.version}</lib>
+                        <lib>org.eclipse.jetty:jetty-server:${jetty.version}</lib>
+                        <lib>org.eclipse.jetty:jetty-servlet:${jetty.version}</lib>
+                        <lib>org.eclipse.jetty:jetty-websocket:${jetty.version}</lib>
+                        <lib>org.eclipse.jetty:jetty-util:${jetty.version}</lib>
+                        <lib>org.eclipse.jetty:jetty-http:${jetty.version}</lib>
+                        <lib>org.eclipse.jetty:jetty-io:${jetty.version}</lib>
+                        <lib>org.eclipse.jetty:jetty-security:${jetty.version}</lib>
+                        <lib>org.eclipse.jetty:jetty-continuation:${jetty.version}</lib>
                     </libs>
+                    <apps>
+                        <app>fr.sewatech.mqttra:mqtt-ra:1.0-SNAPSHOT:rar</app>
+                    </apps>
+                    <webapps>
+                        <webapp>fr.sewatech.mqttra:mqtt-ra-example:1.0-SNAPSHOT:war</webapp>
+                    </webapps>
                 </configuration>
             </plugin>
         </plugins>
