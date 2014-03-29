@@ -2,7 +2,6 @@ package fr.sewatech.mqttra.connector.outbound;
 
 import fr.sewatech.mqttra.api.MqttConnection;
 import fr.sewatech.mqttra.api.MqttConnectionFactory;
-import org.fusesource.mqtt.client.BlockingConnection;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -20,6 +19,7 @@ public class MqttConnectionFactoryImpl implements Referenceable, MqttConnectionF
     private Reference reference;
 
     public MqttConnectionFactoryImpl(ManagedConnectionFactory managedConnectionFactory, ConnectionManager cxManager) {
+        System.out.println("===> new MqttConnectionFactoryImpl with MCF : " + managedConnectionFactory);
         this.managedConnectionFactory = managedConnectionFactory;
         this.cxManager = cxManager;
     }
@@ -36,6 +36,7 @@ public class MqttConnectionFactoryImpl implements Referenceable, MqttConnectionF
     @Override
     public void setReference(Reference reference) {
         this.reference = reference;
+        System.out.println("===> Reference for MqttConnectionFactoryImpl = " + reference);
     }
 
     @Override

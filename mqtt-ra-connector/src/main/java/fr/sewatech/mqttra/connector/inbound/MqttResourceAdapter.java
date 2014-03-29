@@ -25,7 +25,7 @@ import static javax.resource.spi.TransactionSupport.TransactionSupportLevel.NoTr
  * @author Alexis Hassler
  */
 @Connector(
-        vendorName = "sewatech", version = "0.1", eisType = "MQTT Inbound Adapter",
+        vendorName = "sewatech", version = "0.1", eisType = "MQTT Broker",
         transactionSupport = NoTransaction)
 public class MqttResourceAdapter implements ResourceAdapter {
 

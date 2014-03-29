@@ -17,6 +17,8 @@ public class MqttManagedConnectionFactory implements ManagedConnectionFactory, R
     private PrintWriter logWriter;
     private ResourceAdapter ra;
 
+    private MqttConnectionRequestInfo defaultConnectionRequestInfo = new MqttConnectionRequestInfo();
+
     public MqttManagedConnectionFactory() {
         super();
         System.out.println("===================");
@@ -35,7 +37,7 @@ public class MqttManagedConnectionFactory implements ManagedConnectionFactory, R
 
     @Override
     public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo cxRequestInfo) throws ResourceException {
-        return new MqttManagedConnectionImpl();
+        return new MqttManagedConnection(defaultConnectionRequestInfo);
     }
 
     @Override
@@ -61,5 +63,17 @@ public class MqttManagedConnectionFactory implements ManagedConnectionFactory, R
     @Override
     public void setResourceAdapter(ResourceAdapter ra) throws ResourceException {
         this.ra = ra;
+    }
+
+    public void setServerUrl(String serverUrl) {
+        this.defaultConnectionRequestInfo.setServerUrl(serverUrl);
+    }
+
+    public void setDefaultQosLevel(int qosLevel) {
+        this.defaultConnectionRequestInfo.setQosLevel(qosLevel);
+    }
+
+    public void setDefaultTopic(String defaultTopic) {
+        this.defaultConnectionRequestInfo.setTopicName(defaultTopic);
     }
 }

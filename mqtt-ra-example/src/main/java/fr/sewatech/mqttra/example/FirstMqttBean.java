@@ -10,20 +10,22 @@ import org.fusesource.mqtt.client.QoS;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.MessageDrivenContext;
+import javax.naming.*;
 
 /**
  * @author Alexis Hassler
  */
 @MessageDriven(
     activationConfig = {
-        @ActivationConfigProperty(propertyName = "topicName", propertyValue = "swt1"),
+        @ActivationConfigProperty(propertyName = "topicName", propertyValue = "swt/Question"),
         @ActivationConfigProperty(propertyName = "qosLevel", propertyValue = "2"),
         @ActivationConfigProperty(propertyName = "serverUrl", propertyValue = "tcp://localhost:1883")
     }
 )
 public class FirstMqttBean implements MqttMessageListener {
 
-    @Resource(mappedName="MqttConnectionFactory")
+    @Resource(name="MqttDashboardCF")
     MqttConnectionFactory connectionFactory;
 
     @Override
@@ -31,14 +33,15 @@ public class FirstMqttBean implements MqttMessageListener {
         Messages.add(message);
         System.out.println("Message received " + new String(message.getPayload()) + " in " + this.getClass().getName() + " on Topic " + message.getTopic());
 
-        answer("OK");
+        //JndiUtil.inspect("java:");
 
+        answer("OK");
     }
 
     private void answer(String message) {
         try {
             MqttConnection connection = connectionFactory.getConnection();
-            connection.publish("swt2", message);
+            connection.publish(message);
         } catch (Exception e) {
             e.printStackTrace();
         }
