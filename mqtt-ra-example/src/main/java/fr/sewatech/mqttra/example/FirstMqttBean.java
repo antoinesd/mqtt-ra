@@ -23,8 +23,8 @@ import javax.ejb.MessageDriven;
 )
 public class FirstMqttBean implements MqttMessageListener {
 
-//    @Resource(mappedName="MqttConnectionFactory")
-//    MqttConnectionFactory connectionFactory;
+    @Resource(mappedName="MqttConnectionFactory")
+    MqttConnectionFactory connectionFactory;
 
     @Override
     public void onMessage(Message message) {
@@ -36,11 +36,11 @@ public class FirstMqttBean implements MqttMessageListener {
     }
 
     private void answer(String message) {
-//        try {
-//            MqttConnection connection = connectionFactory.getConnection();
-//            connection.publish("swt2", message);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            MqttConnection connection = connectionFactory.getConnection();
+            connection.publish("swt2", message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -14,11 +14,10 @@ class LoggingCallback<T> implements Callback<T> {
 
     @Override
     public void onSuccess(T value) {
-        System.out.println("Success : " + name);
+
     }
 
     @Override
     public void onFailure(Throwable value) {
-        System.out.println("Failure : " + name);
     }
 }

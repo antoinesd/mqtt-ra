@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ServiceJar>
     <ServiceProvider
+            id="MqttResourceAdapter"
+            service="Resource"
+            types="MqttResourceAdapter"
+            class-name="fr.sewatech.mqttra.connector.inbound.MqttResourceAdapter">
+    </ServiceProvider>
+
+    <ServiceProvider
             id="MqttConnectionFactory"
             service="Resource"
             types="fr.sewatech.fr.sewatech.mqttra.api.MqttConnectionFactory"
-            class-name="fr.sewatech.fr.sewatech.mqttra.connector.outbound.MqttConnectionFactoryImpl">
+            class-name="fr.sewatech.mqttra.connector.outbound.MqttManagedConnectionFactory">
+        ResourceAdapter MqttResourceAdapter
     </ServiceProvider>
 </ServiceJar>

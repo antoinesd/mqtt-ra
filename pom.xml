@@ -13,6 +13,7 @@
         <module>mqtt-ra-example</module>
         <module>mqtt-ra-connector</module>
         <module>mqtt-ra</module>
+        <module>mqtt-ra-tomee</module>
     </modules>
 
     <properties>
@@ -135,19 +136,11 @@
                     <tomeeVersion>${tomee.version}</tomeeVersion>
                     <tomeeClassifier>${tomee.classifier}</tomeeClassifier>
                     <libs>
+                        <!-- MQTT in ActiveMQ -->
                         <lib>org.apache.activemq:activemq-mqtt:${activemq.version}</lib>
-
                         <lib>org.fusesource.mqtt-client:mqtt-client:1.5</lib>
                         <lib>org.fusesource.hawtdispatch:hawtdispatch:1.18</lib>
                         <lib>org.fusesource.hawtdispatch:hawtdispatch-transport:1.18</lib>
-
-                        <lib>org.apache.activemq:activemq-http:${activemq.version}</lib>
-                        <lib>org.eclipse.jetty:jetty-server:${jetty.version}</lib>
-                        <lib>org.eclipse.jetty:jetty-servlet:${jetty.version}</lib>
-                        <lib>org.eclipse.jetty:jetty-websocket:${jetty.version}</lib>
-
-                        <lib>fr.sewatech.mqttra:mqtt-ra-api:1.0-SNAPSHOT</lib>
-                        <lib>fr.sewatech.mqttra:mqtt-ra-outbound:1.0-SNAPSHOT</lib>
 
                         <!-- WebSocket in ActiveMQ-->
                         <lib>org.apache.activemq:activemq-http:${activemq.version}</lib>
@@ -159,12 +152,16 @@
                         <lib>org.eclipse.jetty:jetty-io:${jetty.version}</lib>
                         <lib>org.eclipse.jetty:jetty-security:${jetty.version}</lib>
                         <lib>org.eclipse.jetty:jetty-continuation:${jetty.version}</lib>
+
+                        <lib>fr.sewatech.mqttra:mqtt-ra-api:${project.version}</lib>
+                        <lib>fr.sewatech.mqttra:mqtt-ra-connector:${project.version}</lib>
+                        <lib>fr.sewatech.mqttra:mqtt-ra-tomee:${project.version}</lib>
                     </libs>
                     <apps>
-                        <app>fr.sewatech.mqttra:mqtt-ra:1.0-SNAPSHOT:rar</app>
+                        <app>fr.sewatech.mqttra:mqtt-ra:${project.version}:rar</app>
                     </apps>
                     <webapps>
-                        <webapp>fr.sewatech.mqttra:mqtt-ra-example:1.0-SNAPSHOT:war</webapp>
+                        <webapp>fr.sewatech.mqttra:mqtt-ra-example:${project.version}:war</webapp>
                     </webapps>
                 </configuration>
             </plugin>
