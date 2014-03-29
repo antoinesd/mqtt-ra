@@ -4,6 +4,6 @@
     <Resource id="MqttResourceAdapter" type="ActiveMQResourceAdapter">
         BrokerXmlConfig =  broker:(mqtt://localhost:1883,ws://localhost:8000)?useJmx=false&amp;persistent=false
     </Resource>
-<!--    <Resource id="MqttConnectionFactory" type="fr.sewatech.mqttra.api.MqttConnectionFactory" provider="fr.sewatech.mqttra#MqttConnectionFactory">
-    </Resource>-->
+    <Resource id="MqttConnectionFactory" type="fr.sewatech.mqttra.api.MqttConnectionFactory" provider="fr.sewatech.mqttra#MqttConnectionFactory">
+    </Resource>
 </tomee>

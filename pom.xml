@@ -13,7 +13,6 @@
         <module>mqtt-ra-example</module>
         <module>mqtt-ra-connector</module>
         <module>mqtt-ra</module>
-        <module>mqtt-ra-tomee</module>
     </modules>
 
     <properties>
