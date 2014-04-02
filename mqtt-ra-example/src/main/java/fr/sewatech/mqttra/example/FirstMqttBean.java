@@ -33,14 +33,12 @@ public class FirstMqttBean implements MqttMessageListener {
         Messages.add(message);
         System.out.println("Message received " + new String(message.getPayload()) + " in " + this.getClass().getName() + " on Topic " + message.getTopic());
 
-        //JndiUtil.inspect("java:");
-
         answer("OK");
     }
 
     private void answer(String message) {
         try {
-            MqttConnection connection = connectionFactory.getConnection();
+            MqttConnection connection = connectionFactory.getConnection("USER", "PWD");
             connection.publish(message);
         } catch (Exception e) {
             e.printStackTrace();

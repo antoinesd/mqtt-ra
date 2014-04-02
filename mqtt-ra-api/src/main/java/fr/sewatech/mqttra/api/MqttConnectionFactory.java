@@ -5,4 +5,6 @@ package fr.sewatech.mqttra.api;
  */
 public interface MqttConnectionFactory {
     MqttConnection getConnection();
+
+    MqttConnection getConnection(String userName, String password);
 }

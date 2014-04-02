@@ -19,24 +19,13 @@ public class MqttManagedConnection implements javax.resource.spi.ManagedConnecti
     private PrintWriter logWriter;
     private MqttConnectionRequestInfo defaultConnectionRequestInfo;
 
-    public MqttManagedConnection(MqttConnectionRequestInfo defaultConnectionRequestInfo) {
-        this.defaultConnectionRequestInfo = defaultConnectionRequestInfo;
+    public MqttManagedConnection(MqttConnectionRequestInfo connectionRequestInfo) {
+        this.defaultConnectionRequestInfo = connectionRequestInfo;
     }
 
     @Override
     public MqttConnection getConnection(Subject subject, ConnectionRequestInfo cxRequestInfo) throws ResourceException {
-        try {
-            MQTT mqtt = new MQTT();
-            mqtt.setHost(defaultConnectionRequestInfo.getServerUrl());
-            connection = mqtt.blockingConnection();
-            connection.connect();
-            MqttBlockingConnectionImpl mqttBlockingConnection = new MqttBlockingConnectionImpl(connection);
-            mqttBlockingConnection.setDefaultQos(defaultConnectionRequestInfo.getQos());
-            mqttBlockingConnection.setDefaultTopic(defaultConnectionRequestInfo.getTopicName());
-            return mqttBlockingConnection;
-        } catch (Exception e) {
-            throw new ResourceException(e);
-        }
+        return new MqttBlockingConnectionImpl( ((MqttConnectionRequestInfo) cxRequestInfo).mergeWith(defaultConnectionRequestInfo) );
     }
 
     @Override

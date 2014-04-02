@@ -1,6 +1,5 @@
 package fr.sewatech.mqttra.connector.outbound;
 
-import fr.sewatech.mqttra.api.MqttConnectionFactory;
 import org.fusesource.mqtt.client.BlockingConnection;
 
 import javax.resource.ResourceException;
@@ -21,13 +20,11 @@ public class MqttManagedConnectionFactory implements ManagedConnectionFactory, R
 
     public MqttManagedConnectionFactory() {
         super();
-        System.out.println("===================");
     }
 
     @Override
     public Object createConnectionFactory(ConnectionManager cxManager) throws ResourceException {
-        MqttConnectionFactory mqttConnectionFactory = new MqttConnectionFactoryImpl(this, cxManager);
-        return mqttConnectionFactory;
+        return new MqttConnectionFactoryImpl(this, cxManager);
     }
 
     @Override
@@ -37,7 +34,7 @@ public class MqttManagedConnectionFactory implements ManagedConnectionFactory, R
 
     @Override
     public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo cxRequestInfo) throws ResourceException {
-        return new MqttManagedConnection(defaultConnectionRequestInfo);
+        return new MqttManagedConnection(( (MqttConnectionRequestInfo) cxRequestInfo).mergeWith(defaultConnectionRequestInfo) );
     }
 
     @Override

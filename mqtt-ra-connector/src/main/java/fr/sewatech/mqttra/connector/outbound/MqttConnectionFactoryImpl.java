@@ -19,15 +19,26 @@ public class MqttConnectionFactoryImpl implements Referenceable, MqttConnectionF
     private Reference reference;
 
     public MqttConnectionFactoryImpl(ManagedConnectionFactory managedConnectionFactory, ConnectionManager cxManager) {
-        System.out.println("===> new MqttConnectionFactoryImpl with MCF : " + managedConnectionFactory);
         this.managedConnectionFactory = managedConnectionFactory;
         this.cxManager = cxManager;
     }
 
     @Override
     public MqttConnection getConnection() {
+        MqttConnectionRequestInfo mqttConnectionRequestInfo = new MqttConnectionRequestInfo();
         try {
-            return (MqttConnection) this.cxManager.allocateConnection(this.managedConnectionFactory, null);
+            return (MqttConnection) this.cxManager.allocateConnection(this.managedConnectionFactory, mqttConnectionRequestInfo);
+        } catch (ResourceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Override
+    public MqttConnection getConnection(String userName, String password) {
+        MqttConnectionRequestInfo mqttConnectionRequestInfo = new MqttConnectionRequestInfo();
+        mqttConnectionRequestInfo.setUserName(userName);
+        mqttConnectionRequestInfo.setPassword(password);
+        try {
+            return (MqttConnection) this.cxManager.allocateConnection(this.managedConnectionFactory, mqttConnectionRequestInfo);
         } catch (ResourceException e) {
             throw new RuntimeException(e);
         }
