@@ -6,16 +6,21 @@ import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 
 import javax.resource.ResourceException;
+import java.util.logging.Logger;
 
 /**
  * @author Alexis Hassler
  */
 public class MqttBlockingConnectionImpl implements MqttConnection {
+    private static final Logger logger = Logger.getLogger(MqttBlockingConnectionImpl.class.getName());
+
     private BlockingConnection connection;
     private QoS defaultQos;
     private String defaultTopic;
 
     public MqttBlockingConnectionImpl(MqttConnectionRequestInfo connectionRequestInfo) throws ResourceException {
+        logger.fine("Creating a new connection");
+
         this.setDefaultQos(connectionRequestInfo.getQos());
         this.setDefaultTopic(connectionRequestInfo.getTopicName());
 
@@ -35,7 +40,7 @@ public class MqttBlockingConnectionImpl implements MqttConnection {
     @Override
     public void publish(String topicName, String message, QoS qos) {
         try {
-            System.out.println("Trying to publish message " + message + " on topic " + topicName);
+            logger.info("Trying to publish message " + message + " on topic " + topicName);
             connection.publish(topicName, message.getBytes(), qos, true);
         } catch (Exception e) {
             throw new RuntimeException(e);

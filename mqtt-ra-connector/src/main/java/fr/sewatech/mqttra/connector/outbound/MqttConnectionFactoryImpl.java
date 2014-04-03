@@ -9,11 +9,14 @@ import javax.resource.Referenceable;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
+import java.util.logging.Logger;
 
 /**
  * @author Alexis Hassler
  */
 public class MqttConnectionFactoryImpl implements Referenceable, MqttConnectionFactory {
+    private static final Logger logger = Logger.getLogger(MqttConnectionFactoryImpl.class.getName());
+
     private final ManagedConnectionFactory managedConnectionFactory;
     private final ConnectionManager cxManager;
     private Reference reference;
@@ -25,6 +28,7 @@ public class MqttConnectionFactoryImpl implements Referenceable, MqttConnectionF
 
     @Override
     public MqttConnection getConnection() {
+        logger.fine("Asking a connection without credentials");
         MqttConnectionRequestInfo mqttConnectionRequestInfo = new MqttConnectionRequestInfo();
         try {
             return (MqttConnection) this.cxManager.allocateConnection(this.managedConnectionFactory, mqttConnectionRequestInfo);
@@ -34,6 +38,7 @@ public class MqttConnectionFactoryImpl implements Referenceable, MqttConnectionF
     }
     @Override
     public MqttConnection getConnection(String userName, String password) {
+        logger.fine("Asking a connection with login " + userName + " and a password");
         MqttConnectionRequestInfo mqttConnectionRequestInfo = new MqttConnectionRequestInfo();
         mqttConnectionRequestInfo.setUserName(userName);
         mqttConnectionRequestInfo.setPassword(password);
@@ -47,7 +52,6 @@ public class MqttConnectionFactoryImpl implements Referenceable, MqttConnectionF
     @Override
     public void setReference(Reference reference) {
         this.reference = reference;
-        System.out.println("===> Reference for MqttConnectionFactoryImpl = " + reference);
     }
 
     @Override

@@ -2,6 +2,7 @@ package fr.sewatech.mqttra.connector.inbound;
 
 import fr.sewatech.mqttra.api.Message;
 import fr.sewatech.mqttra.api.MqttMessageListener;
+import fr.sewatech.mqttra.connector.outbound.MqttManagedConnectionFactory;
 import org.fusesource.hawtdispatch.Task;
 import org.fusesource.mqtt.client.CallbackConnection;
 import org.fusesource.mqtt.client.MQTT;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Logger;
 
 import static javax.resource.spi.TransactionSupport.TransactionSupportLevel.NoTransaction;
 
@@ -28,6 +30,7 @@ import static javax.resource.spi.TransactionSupport.TransactionSupportLevel.NoTr
         vendorName = "sewatech", version = "0.1", eisType = "MQTT Broker",
         transactionSupport = NoTransaction)
 public class MqttResourceAdapter implements ResourceAdapter {
+    private static final Logger logger = Logger.getLogger(MqttResourceAdapter.class.getName());
 
     Map<Key, CallbackConnection> connections = new HashMap<>();
     private BootstrapContext bootstrapContext;
@@ -43,6 +46,7 @@ public class MqttResourceAdapter implements ResourceAdapter {
 
     @Override
     public void endpointActivation(MessageEndpointFactory mdbFactory, ActivationSpec activationSpec) throws ResourceException {
+        logger.fine("endpoint activation");
         final ActivationSpecBean spec = ActivationSpecBean.class.cast(activationSpec);
 
         try {
@@ -59,6 +63,7 @@ public class MqttResourceAdapter implements ResourceAdapter {
 
     @Override
     public void endpointDeactivation(MessageEndpointFactory mdbFactory, ActivationSpec activationSpec) {
+        logger.fine("endpoint deactivation");
         Key key = new Key(mdbFactory, activationSpec);
         try {
             final CallbackConnection connection = connections.remove(key);
@@ -141,6 +146,7 @@ public class MqttResourceAdapter implements ResourceAdapter {
 
     @Override
     public XAResource[] getXAResources(ActivationSpec[] activationSpecs) throws ResourceException {
+        logger.fine("Asked fir XA resources, but none to provide");
         return new XAResource[0];
     }
 

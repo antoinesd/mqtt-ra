@@ -2,7 +2,6 @@ package fr.sewatech.mqttra.connector.outbound;
 
 import fr.sewatech.mqttra.api.MqttConnection;
 import org.fusesource.mqtt.client.BlockingConnection;
-import org.fusesource.mqtt.client.MQTT;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionEventListener;
@@ -12,8 +11,11 @@ import javax.resource.spi.ManagedConnectionMetaData;
 import javax.security.auth.Subject;
 import javax.transaction.xa.XAResource;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 public class MqttManagedConnection implements javax.resource.spi.ManagedConnection {
+
+    private static final Logger logger = Logger.getLogger(MqttManagedConnectionFactory.class.getName());
 
     private BlockingConnection connection;
     private PrintWriter logWriter;
@@ -25,12 +27,14 @@ public class MqttManagedConnection implements javax.resource.spi.ManagedConnecti
 
     @Override
     public MqttConnection getConnection(Subject subject, ConnectionRequestInfo cxRequestInfo) throws ResourceException {
+        logger.fine("Getting connection");
         return new MqttBlockingConnectionImpl( ((MqttConnectionRequestInfo) cxRequestInfo).mergeWith(defaultConnectionRequestInfo) );
     }
 
     @Override
     public void destroy() throws ResourceException {
         try {
+            logger.fine("Destroying");
             this.connection.kill();
         } catch (Exception e) {
             throw new ResourceException(e);
@@ -41,7 +45,7 @@ public class MqttManagedConnection implements javax.resource.spi.ManagedConnecti
 
     @Override
     public void cleanup() throws ResourceException {
-
+        logger.fine("Would like to cleanup, but nothing done");
     }
 
     @Override

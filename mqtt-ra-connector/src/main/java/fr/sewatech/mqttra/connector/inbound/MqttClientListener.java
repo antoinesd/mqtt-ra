@@ -6,6 +6,8 @@ import org.fusesource.hawtbuf.Buffer;
 import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.mqtt.client.Listener;
 
+import java.util.logging.Logger;
+
 /**
 * @author Alexis Hassler
 */

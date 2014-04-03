@@ -8,10 +8,13 @@ import javax.security.auth.Subject;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Set;
+import java.util.logging.Logger;
 
 @ConnectionDefinition(connectionFactory = MqttConnectionFactoryImpl.class, connectionFactoryImpl = MqttConnectionFactoryImpl.class,
                       connection = BlockingConnection.class, connectionImpl = BlockingConnection.class)
 public class MqttManagedConnectionFactory implements ManagedConnectionFactory, ResourceAdapterAssociation, Serializable {
+
+    private static final Logger logger = Logger.getLogger(MqttManagedConnectionFactory.class.getName());
 
     private PrintWriter logWriter;
     private ResourceAdapter ra;
@@ -34,12 +37,14 @@ public class MqttManagedConnectionFactory implements ManagedConnectionFactory, R
 
     @Override
     public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo cxRequestInfo) throws ResourceException {
+        logger.fine("Creating managed connection");
         return new MqttManagedConnection(( (MqttConnectionRequestInfo) cxRequestInfo).mergeWith(defaultConnectionRequestInfo) );
     }
 
     @Override
     public ManagedConnection matchManagedConnections(Set connectionSet, Subject subject, ConnectionRequestInfo cxRequestInfo) throws ResourceException {
-        throw null;
+        logger.fine("Trying to match a managed connection");
+        return null;
     }
 
     @Override
@@ -72,5 +77,13 @@ public class MqttManagedConnectionFactory implements ManagedConnectionFactory, R
 
     public void setDefaultTopic(String defaultTopic) {
         this.defaultConnectionRequestInfo.setTopicName(defaultTopic);
+    }
+
+    public void setUserName(String userName) {
+        this.defaultConnectionRequestInfo.setUserName(userName);
+    }
+
+    public void setPassword(String password) {
+        this.defaultConnectionRequestInfo.setPassword(password);
     }
 }
