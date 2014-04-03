@@ -153,6 +153,9 @@
                         <lib>org.eclipse.jetty:jetty-security:${jetty.version}</lib>
                         <lib>org.eclipse.jetty:jetty-continuation:${jetty.version}</lib>
 
+                        <!-- Persistence in ActiveMQ-->
+                        <lib>com.h2database:h2:1.3.175</lib>
+
                         <lib>fr.sewatech.mqttra:mqtt-ra-api:${project.version}</lib>
                         <lib>fr.sewatech.mqttra:mqtt-ra-connector:${project.version}</lib>
                         <lib>fr.sewatech.mqttra:mqtt-ra-tomee:${project.version}</lib>
