@@ -19,7 +19,7 @@ public class MqttBlockingConnectionImpl implements MqttConnection {
     private String defaultTopic;
 
     public MqttBlockingConnectionImpl(MqttConnectionRequestInfo connectionRequestInfo) throws ResourceException {
-        logger.fine("Creating a new connection");
+        logger.fine("Creating a new connection to " + connectionRequestInfo.getServerUrl() + " for login " + connectionRequestInfo.getUserName());
 
         this.setDefaultQos(connectionRequestInfo.getQos());
         this.setDefaultTopic(connectionRequestInfo.getTopicName());

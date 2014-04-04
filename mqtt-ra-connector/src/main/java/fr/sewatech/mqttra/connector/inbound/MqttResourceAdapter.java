@@ -86,6 +86,7 @@ public class MqttResourceAdapter implements ResourceAdapter {
 
     private BlockingQueue<MqttMessageListener> initializeEndpointsPool(MessageEndpointFactory mdbFactory, ActivationSpecBean spec) throws UnavailableException {
         int poolSize = spec.getPoolSize();
+        logger.fine("Initializing pool with " + poolSize + " connections");
         BlockingQueue<MqttMessageListener> pool = new ArrayBlockingQueue<>(poolSize);
         for (int i = 0; i < poolSize; i++) {
             pool.add(MqttMessageListener.class.cast(mdbFactory.createEndpoint(null)));
@@ -125,7 +126,10 @@ public class MqttResourceAdapter implements ResourceAdapter {
     }
 
     private CallbackConnection createConnection(final MessageEndpointFactory mdbFactory, final ActivationSpecBean spec) throws URISyntaxException {
+        logger.fine("Creating connection to " + spec.getUserName() + " with login " + spec.getUserName());
         MQTT mqtt = new MQTT();
+        mqtt.setUserName(spec.getUserName());
+        mqtt.setPassword(spec.getPassword());
         mqtt.setHost(spec.getServerUrl());
         final CallbackConnection connection = mqtt.callbackConnection();
 

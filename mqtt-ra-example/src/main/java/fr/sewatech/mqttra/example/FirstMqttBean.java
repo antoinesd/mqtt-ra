@@ -19,8 +19,10 @@ import javax.naming.*;
 @MessageDriven(
     activationConfig = {
         @ActivationConfigProperty(propertyName = "topicName", propertyValue = "swt/Question"),
-        @ActivationConfigProperty(propertyName = "qosLevel", propertyValue = "2"),
-        @ActivationConfigProperty(propertyName = "serverUrl", propertyValue = "tcp://localhost:1883")
+        @ActivationConfigProperty(propertyName = "qosLevel",  propertyValue = "1"),
+        @ActivationConfigProperty(propertyName = "serverUrl", propertyValue = "tcp://localhost:2883"),
+        @ActivationConfigProperty(propertyName = "userName",  propertyValue = "user"),
+        @ActivationConfigProperty(propertyName = "password",  propertyValue = "password")
     }
 )
 public class FirstMqttBean implements MqttMessageListener {
@@ -38,7 +40,7 @@ public class FirstMqttBean implements MqttMessageListener {
 
     private void answer(String message) {
         try {
-            MqttConnection connection = connectionFactory.getConnection("USER", "PWD");
+            MqttConnection connection = connectionFactory.getConnection();
             connection.publish(message);
         } catch (Exception e) {
             e.printStackTrace();

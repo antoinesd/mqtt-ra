@@ -8,9 +8,9 @@ import javax.resource.spi.ConnectionRequestInfo;
  * @author Alexis Hassler
  */
 public class MqttConnectionRequestInfo implements ConnectionRequestInfo {
-    private String serverUrl = "tcp://localhost:1883";
-    private int qosLevel = 0;
-    private String topicName = null;
+    private String serverUrl;
+    private int qosLevel = -1;
+    private String topicName;
     private String userName;
     private String password;
 
@@ -55,6 +55,9 @@ public class MqttConnectionRequestInfo implements ConnectionRequestInfo {
     }
 
     public MqttConnectionRequestInfo mergeWith(MqttConnectionRequestInfo connectionRequestInfo) {
+        if (qosLevel < 0) {
+            qosLevel = connectionRequestInfo.qosLevel;
+        }
         if (isNullOrEmpty(serverUrl)) {
             serverUrl = connectionRequestInfo.serverUrl;
         }

@@ -22,6 +22,8 @@ public class ActivationSpecBean implements ActivationSpec {
     private int qosLevel = 0;
     private String serverUrl = "tcp://localhost:1883";
     private int poolSize = 3;
+    private String userName;
+    private String password;
 
     public String getTopicName() {
         return topicName;
@@ -49,6 +51,31 @@ public class ActivationSpecBean implements ActivationSpec {
     public void setServerUrl(String serverUrl) {
         this.serverUrl = serverUrl;
     }
+
+    public int getPoolSize() {
+        return poolSize;
+    }
+
+    public void setPoolSize(int poolSize) {
+        this.poolSize = poolSize;
+    }
+
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
 
     Topic[] buildTopicArray() {
         return new Topic[]{buildTopic()};
@@ -96,13 +123,5 @@ public class ActivationSpecBean implements ActivationSpec {
     @Override
     public int hashCode() {
         return Objects.hash(topicName, qosLevel, serverUrl);
-    }
-
-    public int getPoolSize() {
-        return poolSize;
-    }
-
-    public void setPoolSize(int poolSize) {
-        this.poolSize = poolSize;
     }
 }

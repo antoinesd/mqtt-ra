@@ -2,9 +2,14 @@
 <tomee>
     <Deployments dir="apps" />
 
-    <Resource id="MqttResourceAdapter" type="ActiveMQResourceAdapter">
-        BrokerXmlConfig =  broker:(mqtt://localhost:1883,ws://localhost:8000)?useJmx=false&amp;persistent=true
+    <!-- see http://activemq.apache.org/broker-uri.html for full broker URI -->
+<!--
+    <Resource id="AMQRA" type="ActiveMQResourceAdapter">
+        BrokerXmlConfig = broker:(mqtt://localhost:1883,ws://localhost:8000)?useJmx=false&amp;persistent=true
         DataSource      = AmqDS
+    </Resource>
+-->
+    <Resource id="MqttResourceAdapter" type="fr.sewatech.mqttra.inbound.MqttResourceAdapter" provider="fr.sewatech.mqttra#MqttResourceAdapter">
     </Resource>
 
     <Resource id="AmqDS" type="javax.sql.DataSource">
