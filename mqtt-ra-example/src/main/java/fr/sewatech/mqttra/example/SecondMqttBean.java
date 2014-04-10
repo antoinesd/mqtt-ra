@@ -12,7 +12,7 @@ import javax.inject.Inject;
  * @author Alexis Hassler
  */
 @MessageDriven(activationConfig = {
-        @ActivationConfigProperty(propertyName = "topicName", propertyValue = "swt2")
+        @ActivationConfigProperty(propertyName = "topicName", propertyValue = "swt/Question")
 })
 public class SecondMqttBean implements MqttMessageListener {
 

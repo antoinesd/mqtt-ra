@@ -20,7 +20,7 @@ import javax.naming.*;
     activationConfig = {
         @ActivationConfigProperty(propertyName = "topicName", propertyValue = "swt/Question"),
         @ActivationConfigProperty(propertyName = "qosLevel",  propertyValue = "1"),
-        @ActivationConfigProperty(propertyName = "serverUrl", propertyValue = "tcp://localhost:2883"),
+        @ActivationConfigProperty(propertyName = "serverUrl", propertyValue = "tcp://localhost:1883"),
         @ActivationConfigProperty(propertyName = "userName",  propertyValue = "user"),
         @ActivationConfigProperty(propertyName = "password",  propertyValue = "password")
     }
