@@ -1,5 +1,5 @@
 <resources>
-    <Resource id="MqttDashboardCF" type="fr.sewatech.mqttra.api.MqttConnectionFactory" provider="fr.sewatech.mqttra#MqttConnectionFactory">
+    <Resource id="mqtt/AnswerCF" type="fr.sewatech.mqttra.api.MqttConnectionFactory" provider="fr.sewatech.mqttra#MqttConnectionFactory">
         ServerUrl = tcp://localhost:2883
         DefaultQosLevel = 2
         DefaultTopic = swt/Answer
