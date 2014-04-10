@@ -1,10 +1,12 @@
 package fr.sewatech.mqttra.example;
 
 import fr.sewatech.mqttra.api.Message;
+import fr.sewatech.mqttra.api.MqttConnectionFactory;
 import fr.sewatech.mqttra.api.MqttMessageListener;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.inject.Inject;
 
 /**
  * @author Alexis Hassler
@@ -13,6 +15,9 @@ import javax.ejb.MessageDriven;
         @ActivationConfigProperty(propertyName = "topicName", propertyValue = "swt2")
 })
 public class SecondMqttBean implements MqttMessageListener {
+
+    @Inject
+    MqttConnectionFactory connectionFactory;
 
     @Override
     public void onMessage(Message message) {
