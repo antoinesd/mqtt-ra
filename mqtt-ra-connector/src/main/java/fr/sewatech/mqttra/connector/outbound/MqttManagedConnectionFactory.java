@@ -86,4 +86,24 @@ public class MqttManagedConnectionFactory implements ManagedConnectionFactory, R
     public void setPassword(String password) {
         this.defaultConnectionRequestInfo.setPassword(password);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MqttManagedConnectionFactory that = (MqttManagedConnectionFactory) o;
+
+        if (!defaultConnectionRequestInfo.equals(that.defaultConnectionRequestInfo)) return false;
+        if (!ra.equals(that.ra)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = ra.hashCode();
+        result = 31 * result + defaultConnectionRequestInfo.hashCode();
+        return result;
+    }
 }

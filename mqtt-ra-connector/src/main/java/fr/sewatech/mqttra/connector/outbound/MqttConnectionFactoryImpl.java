@@ -9,12 +9,13 @@ import javax.resource.Referenceable;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
+import java.io.Serializable;
 import java.util.logging.Logger;
 
 /**
  * @author Alexis Hassler
  */
-public class MqttConnectionFactoryImpl implements Referenceable, MqttConnectionFactory {
+public class MqttConnectionFactoryImpl implements Referenceable, MqttConnectionFactory, Serializable {
     private static final Logger logger = Logger.getLogger(MqttConnectionFactoryImpl.class.getName());
 
     private final ManagedConnectionFactory managedConnectionFactory;

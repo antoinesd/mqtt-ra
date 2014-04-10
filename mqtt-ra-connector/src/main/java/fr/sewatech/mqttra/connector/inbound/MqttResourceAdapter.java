@@ -179,4 +179,22 @@ public class MqttResourceAdapter implements ResourceAdapter {
             return Objects.hash(this.factory, this.activationSpec);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MqttResourceAdapter that = (MqttResourceAdapter) o;
+
+        if (!bootstrapContext.equals(that.bootstrapContext)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = connections.hashCode();
+        return result;
+    }
 }

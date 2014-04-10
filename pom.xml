@@ -110,6 +110,30 @@
                     </webapps>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>1.0.1.Final</version>
+                <configuration>
+                    <server-config>standalone-full.xml</server-config>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>deploy-artifact</id>
+                        <goals>
+                            <goal>deploy-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>mqtt-ra-example</artifactId>
+                            <version>${project.version}</version>
+                            <type>rar</type>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

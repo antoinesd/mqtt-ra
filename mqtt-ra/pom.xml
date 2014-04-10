@@ -18,6 +18,20 @@
             <artifactId>mqtt-ra-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mqtt-ra-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.mqtt-client</groupId>
+            <artifactId>mqtt-client</artifactId>
+            <version>1.10</version>
+        </dependency>
     </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+    </build>
 
 </project>

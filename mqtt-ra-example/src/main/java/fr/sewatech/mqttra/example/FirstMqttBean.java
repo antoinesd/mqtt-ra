@@ -27,7 +27,7 @@ import javax.naming.*;
 )
 public class FirstMqttBean implements MqttMessageListener {
 
-    @Resource(name="mqtt/AnswerCF")
+    @Resource(name="java:/mqtt/AnswerCF")
     MqttConnectionFactory connectionFactory;
 
     @Override
