@@ -15,10 +15,10 @@ WildFly has no MQTT broker embedded. You'll have to install a start an independa
 
 Build the project and run WildFly
 
-    mvn clean install
-    mvn -pl mqtt-ra wildfly:run &
-    // wait until WildFly has started
-    mqtt-ra-example wildfly:deploy
+    mvn clean install -Pwildfly
+    mvn -pl mqtt-ra wildfly:run -Pwildfly&
+    // wait until WildFly has started and mqtt-ra.rar is deployed
+    mvn -pl mqtt-ra-example wildfly:deploy -Pwildfly
 
 It run WildFly. It deploys the MQTT resource adapter and an example application.
 

@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jboss xmlns="http://www.jboss.com/xml/ns/javaee"
        xmlns:jee="http://java.sun.com/xml/ns/javaee"
-       xmlns:mdb="urn:resource-adapter-binding"
-       xmlns:security="urn:security">
+       xmlns:mdb="urn:resource-adapter-binding">
 
     <jee:assembly-descriptor>
         <mdb:resource-adapter-binding>
-            <jee:ejb-name>FirstMqttBean</jee:ejb-name>
-            <mdb:resource-adapter-name>mqtt-ra.rar</mdb:resource-adapter-name>
-        </mdb:resource-adapter-binding>
-        <mdb:resource-adapter-binding>
-            <jee:ejb-name>SecondMqttBean</jee:ejb-name>
+            <jee:ejb-name>*</jee:ejb-name>
             <mdb:resource-adapter-name>mqtt-ra.rar</mdb:resource-adapter-name>
         </mdb:resource-adapter-binding>
     </jee:assembly-descriptor>

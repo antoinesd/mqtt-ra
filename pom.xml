@@ -17,6 +17,7 @@
     </modules>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jetty.version>7.6.9.v20130131</jetty.version>
         <activemq.version>5.9.0</activemq.version>
         <tomee.version>1.6.0</tomee.version>
@@ -136,5 +137,17 @@
 
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>tomee</id>
+            <activation>
+                <activeByDefault/>
+            </activation>
+        </profile>
+        <profile>
+            <id>wildfly</id>
+        </profile>
+    </profiles>
 
 </project>

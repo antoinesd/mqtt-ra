@@ -4,14 +4,10 @@ import fr.sewatech.mqttra.api.Message;
 import fr.sewatech.mqttra.api.MqttConnection;
 import fr.sewatech.mqttra.api.MqttConnectionFactory;
 import fr.sewatech.mqttra.api.MqttMessageListener;
-import org.fusesource.mqtt.client.BlockingConnection;
-import org.fusesource.mqtt.client.QoS;
 
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.ejb.MessageDrivenContext;
-import javax.naming.*;
 
 /**
  * @author Alexis Hassler
@@ -27,7 +23,9 @@ import javax.naming.*;
 )
 public class FirstMqttBean implements MqttMessageListener {
 
-    @Resource(name="java:/mqtt/AnswerCF")
+    public static final String RA_JNDI_NAME = "${mqttra.jndiname}";
+
+    @Resource(name= RA_JNDI_NAME)
     MqttConnectionFactory connectionFactory;
 
     @Override
