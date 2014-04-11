@@ -1,9 +1,7 @@
 package fr.sewatech.mqttra.example;
 
-import fr.sewatech.mqttra.api.Message;
-import fr.sewatech.mqttra.api.MqttConnection;
-import fr.sewatech.mqttra.api.MqttConnectionFactory;
-import fr.sewatech.mqttra.api.MqttMessageListener;
+import fr.sewatech.mqttra.api.*;
+import org.fusesource.mqtt.client.QoS;
 
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
@@ -12,15 +10,7 @@ import javax.ejb.MessageDriven;
 /**
  * @author Alexis Hassler
  */
-@MessageDriven(
-    activationConfig = {
-        @ActivationConfigProperty(propertyName = "topicName", propertyValue = "swt/Question"),
-        @ActivationConfigProperty(propertyName = "qosLevel",  propertyValue = "1"),
-        @ActivationConfigProperty(propertyName = "serverUrl", propertyValue = "tcp://localhost:1883"),
-        @ActivationConfigProperty(propertyName = "userName",  propertyValue = "user"),
-        @ActivationConfigProperty(propertyName = "password",  propertyValue = "password")
-    }
-)
+@MessageDriven
 public class FirstMqttBean implements MqttMessageListener {
 
     public static final String RA_JNDI_NAME = "${mqttra.jndiname}";
@@ -28,13 +18,22 @@ public class FirstMqttBean implements MqttMessageListener {
     @Resource(name= RA_JNDI_NAME)
     MqttConnectionFactory connectionFactory;
 
-    @Override
-    public void onMessage(Message message) {
+    @Topic(name = "swt/Question", qos = QoS.AT_LEAST_ONCE)
+    public void onQuestion(Message message) {
         Messages.add(message);
         System.out.println("Message received " + new String(message.getPayload()) + " in " + this.getClass().getName() + " on Topic " + message.getTopic());
 
         answer("OK");
     }
+
+    @Topic(name = "swt/Question", qos = QoS.EXACTLY_ONCE)
+    public void onQuestionToo(Message message) {
+        Messages.add(message);
+        System.out.println("Message received " + new String(message.getPayload()) + " in " + this.getClass().getName() + " on Topic " + message.getTopic());
+
+        answer("OK second time");
+    }
+
 
     private void answer(String message) {
         try {

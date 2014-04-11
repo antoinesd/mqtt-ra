@@ -1,24 +1,13 @@
-# Getting Started with Tomee
-
-Build the project and run Tomee+
-
-    mvn clean install
-    mvn tomee:run
-
-It run Tomee+ with an embedded MQTT broker listening on port 1883. It deploys the MQTT resource adapter and an example application.
-
-At end, you will have to stop TomEE+, with a simple CTRL+C.
-
 # Getting Started with WildFly
 
 WildFly has no MQTT broker embedded. You'll have to install a start an independant one. For example you can use [Mosquitto](http://mosquitto.org).
 
 Build the project and run WildFly
 
-    mvn clean install -Pwildfly
-    mvn -pl mqtt-ra wildfly:run -Pwildfly&
+    mvn clean install
+    mvn -pl mqtt-ra wildfly:run&
     // wait until WildFly has started and mqtt-ra.rar is deployed
-    mvn -pl mqtt-ra-example wildfly:deploy -Pwildfly
+    mvn -pl mqtt-ra-example wildfly:deploy
 
 It run WildFly. It deploys the MQTT resource adapter and an example application.
 

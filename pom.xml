@@ -141,9 +141,6 @@
     <profiles>
         <profile>
             <id>tomee</id>
-            <activation>
-                <activeByDefault/>
-            </activation>
         </profile>
         <profile>
             <id>wildfly</id>

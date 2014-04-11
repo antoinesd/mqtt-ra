@@ -18,7 +18,7 @@ import java.util.Objects;
 public class ActivationSpecBean implements ActivationSpec {
     private ResourceAdapter resourceAdapter;
 
-    private String topicName;
+    private String topicName = "";
     private int qosLevel = 0;
     private String serverUrl = "tcp://localhost:1883";
     private int poolSize = 3;
@@ -86,11 +86,11 @@ public class ActivationSpecBean implements ActivationSpec {
 
     @Override
     public void validate() throws InvalidPropertyException {
-        validateNotNullOrEmpty("topicName", topicName);
+//        validateNotNullOrEmpty("topicName", topicName);
         validateNotNullOrEmpty("serverUrl", serverUrl);
-        if (qosLevel < 0 || qosLevel > 2) {
-            throw new InvalidPropertyException("qosLevel value " + qosLevel + "is not valid, it should be between 0 and 2");
-        }
+//        if (qosLevel < 0 || qosLevel > 2) {
+//            throw new InvalidPropertyException("qosLevel value " + qosLevel + "is not valid, it should be between 0 and 2");
+//        }
     }
 
     private void validateNotNullOrEmpty(String propertyName, String value) throws InvalidPropertyException {

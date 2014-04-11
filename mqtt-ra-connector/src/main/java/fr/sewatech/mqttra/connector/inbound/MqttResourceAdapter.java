@@ -1,8 +1,7 @@
 package fr.sewatech.mqttra.connector.inbound;
 
-import fr.sewatech.mqttra.api.Message;
 import fr.sewatech.mqttra.api.MqttMessageListener;
-import fr.sewatech.mqttra.connector.outbound.MqttManagedConnectionFactory;
+import fr.sewatech.mqttra.api.Topic;
 import org.fusesource.hawtdispatch.Task;
 import org.fusesource.mqtt.client.CallbackConnection;
 import org.fusesource.mqtt.client.MQTT;
@@ -10,9 +9,8 @@ import org.fusesource.mqtt.client.MQTT;
 import javax.resource.ResourceException;
 import javax.resource.spi.*;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
-import javax.resource.spi.work.Work;
-import javax.resource.spi.work.WorkException;
 import javax.transaction.xa.XAResource;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,10 +49,15 @@ public class MqttResourceAdapter implements ResourceAdapter {
 
         try {
             BlockingQueue<MqttMessageListener> pool = initializeEndpointsPool(mdbFactory, spec);
-            MqttMessageListener endPointProxy = createEndPointProxy(pool);
+            MqttMessageListenerProxy endPointProxy = createEndPointProxy(pool);
 
-            createConnection(mdbFactory, spec)
-                .listener(new MqttClientListener(endPointProxy));
+            Class<?> endpointClass = mdbFactory.getEndpointClass();
+            for (Method method : endpointClass.getMethods()) {
+                if (method.isAnnotationPresent(Topic.class)) {
+                    createConnection(mdbFactory, method, spec)
+                        .listener(new MqttClientListener(endPointProxy, method));
+                }
+            }
 
         } catch (Exception e) {
             throw new ResourceException(e);
@@ -70,18 +73,17 @@ public class MqttResourceAdapter implements ResourceAdapter {
             if (connection != null) {
                 connection.suspend();  // in order to skip other messages in the topic
                 connection.getDispatchQueue()
-                          .execute(new Task() {
-                              @Override
-                              public void run() {
-                                  connection.kill(new LoggingCallback<Void>("disconnect"));
-                              }
-                          });
+                        .execute(new Task() {
+                            @Override
+                            public void run() {
+                                connection.kill(new LoggingCallback<Void>("disconnect"));
+                            }
+                        });
             }
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
-
 
 
     private BlockingQueue<MqttMessageListener> initializeEndpointsPool(MessageEndpointFactory mdbFactory, ActivationSpecBean spec) throws UnavailableException {
@@ -94,38 +96,11 @@ public class MqttResourceAdapter implements ResourceAdapter {
         return pool;
     }
 
-    private MqttMessageListener createEndPointProxy(final BlockingQueue<MqttMessageListener> pool) {
-        return new MqttMessageListener() {
-            @Override
-            public void onMessage(final Message message) {
-                final MqttMessageListener listener;
-                try {
-                    listener = pool.take();
-
-                    bootstrapContext.getWorkManager().startWork(new Work() {
-                        @Override
-                        public void run() {
-                            try {
-                                listener.onMessage(message);
-                                pool.add(listener);
-                            } catch (Throwable e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-
-                        @Override
-                        public void release() {
-                        }
-                    });
-                } catch (WorkException | InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-        };
+    private MqttMessageListenerProxy createEndPointProxy(final BlockingQueue<MqttMessageListener> pool) {
+        return new MqttMessageListenerProxy(bootstrapContext, pool);
     }
 
-    private CallbackConnection createConnection(final MessageEndpointFactory mdbFactory, final ActivationSpecBean spec) throws URISyntaxException {
+    private CallbackConnection createConnection(final MessageEndpointFactory mdbFactory, final Method method, final ActivationSpecBean spec) throws URISyntaxException {
         logger.fine("Creating connection to " + spec.getUserName() + " with login " + spec.getUserName());
         MQTT mqtt = new MQTT();
         mqtt.setUserName(spec.getUserName());
@@ -138,7 +113,10 @@ public class MqttResourceAdapter implements ResourceAdapter {
             public void onSuccess(Void value) {
                 super.onSuccess(value);
 
-                connection.subscribe(spec.buildTopicArray(), new LoggingCallback<byte[]>("subscribe"));
+                Topic annotation = method.getAnnotation(Topic.class);
+                connection.subscribe(
+                        new org.fusesource.mqtt.client.Topic[]{new org.fusesource.mqtt.client.Topic(annotation.name(), annotation.qos())},
+                        new LoggingCallback<byte[]>("subscribe"));
 
                 Key key = new Key(mdbFactory, spec);
                 connections.put(key, connection);

@@ -13,7 +13,7 @@
     <packaging>war</packaging>
 
     <properties>
-        <mqttra.jndiname>mqtt/AnswerCF</mqttra.jndiname>
+        <mqttra.jndiname>java:/mqtt/AnswerCF</mqttra.jndiname>
     </properties>
 
     <dependencies>
@@ -63,8 +63,17 @@
     <profiles>
         <profile>
             <id>wildfly</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <mqttra.jndiname>java:/mqtt/AnswerCF</mqttra.jndiname>
+            </properties>
+        </profile>
+        <profile>
+            <id>tomee</id>
+            <properties>
+                <mqttra.jndiname>mqtt/AnswerCF</mqttra.jndiname>
             </properties>
         </profile>
     </profiles>

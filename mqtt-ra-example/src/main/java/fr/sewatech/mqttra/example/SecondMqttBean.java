@@ -19,7 +19,6 @@ public class SecondMqttBean implements MqttMessageListener {
     @Inject
     MqttConnectionFactory connectionFactory;
 
-    @Override
     public void onMessage(Message message) {
         Messages.add(message);
         System.out.println("Message received in " + this.getClass().getName() + " on Topic " + message.getTopic());
